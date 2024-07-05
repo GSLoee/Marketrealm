@@ -55,7 +55,7 @@ const ProductForm = () => {
             <FormItem className='w-full'>
               {/* <FormLabel>Title</FormLabel> */}
               <FormControl>
-                <Input placeholder="Product title" {...field} 
+                <Input placeholder="Product name/title" {...field} 
                 className='input-field'/>
               </FormControl>
               <FormMessage />
