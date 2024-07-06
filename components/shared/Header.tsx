@@ -22,16 +22,18 @@ const Header = () => {
             </Link>
             <div className='flex w-32 justify-end gap-3'>
             <SignedOut>
-                <Button asChild className='rounded-full' size='lg'>
+                <Button asChild className='rounded-full'>
+                    
                 <SignInButton />
                 </Button>
-                <Button asChild className='rounded-full' size='lg'>
+                <Button asChild className='rounded-full'>
+                   
                 <SignUpButton />
                 </Button>                
             </SignedOut>
             <SignedIn>
             <UserButton />
-                <Button className='rounded-full bg-sky-600'>
+                <Button className='rounded-full'>
                     <Link href='/list-product'>
                     List Product
                     </Link>
