@@ -47,13 +47,13 @@ export type CreateUserParams = {
     page: number
   }
   
-  export type GetProductByUserParams = {
+  export type GetProductsByUserParams = {
     userId: string
     limit?: number
     page: number
   }
   
-  export type GetRelatedProductByCategoryParams = {
+  export type GetRelatedProductsByCategoryParams = {
     categoryId: string
     productId: string
     limit?: number

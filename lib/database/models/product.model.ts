@@ -10,15 +10,15 @@ export interface IProduct extends Document {
     seller: {_id: string, username: string};
 }
 
-const EventSchema = new Schema({
+const ProductSchema = new Schema({
     title: {type: String, required: true},
     description: {type: String},
     imageURL: {type: String, required: true},
     price: {type: String, required: true},
     category: {type: Schema.Types.ObjectId, ref: 'Category'},
-    seller: {type: Schema.Types.ObjectId, ref: 'User'}
+    organizer: {type: Schema.Types.ObjectId, ref: 'User'}
 })
 
-const Event = models.Event || model('Event', EventSchema)
+const Event = models.Event || model('Product', ProductSchema)
 
 export default Event;
