@@ -3,6 +3,7 @@ import { Schema, model, models, Document } from 'mongoose'
 export interface IOrder extends Document {
   stripeId: string
   totalAmount: string
+  shippingAddress: string
   product: {
     _id: string
     title: string

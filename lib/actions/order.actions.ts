@@ -4,7 +4,7 @@ import { CheckoutOrderParams, CreateOrderParams, GetOrdersByProductParams, GetOr
 import { redirect } from 'next/navigation';
 import { handleError } from '../utils';
 import { connectToDatabase } from '../database';
-import Order from '../database/models/order.mode';
+import Order from '../database/models/order.model';
 import Product from '../database/models/product.model';
 import { ObjectId } from 'mongodb';
 import User from '../database/models/user.model';
@@ -28,6 +28,9 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
           quantity: 1
         },
       ],
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA'] // Add the countries you want to allow
+      },
       metadata: {
         productId: order.productId,
         buyerId: order.buyerId,
