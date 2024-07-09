@@ -41,7 +41,7 @@ type ProductFormProps = {
 
 const ProductForm = ({ userId, type, product, productId}: ProductFormProps) => {
     const [files, setFiles] = useState<File[]>([])
-    const initialValues = productDefaultValues;
+    const initialValues = product && type === 'Update' ? product: productDefaultValues;
 
     const router = useRouter()
     const { startUpload } = useUploadThing('imageUploader')

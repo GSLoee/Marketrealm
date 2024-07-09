@@ -34,8 +34,18 @@ const Header = () => {
             <SignedIn>
             <UserButton />
                 <Button className='rounded-full'>
+                    <Link href='/'>
+                    Home
+                    </Link>
+                </Button>
+                <Button className='rounded-full'>
                     <Link href='/list-product'>
-                    List Product
+                    Add Product
+                    </Link>
+                </Button>
+                <Button className='rounded-full'>
+                    <Link href='/dashboard'>
+                    My Dashboard
                     </Link>
                 </Button>
                 <Cart />                

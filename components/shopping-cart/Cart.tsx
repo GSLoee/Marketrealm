@@ -17,7 +17,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 
-const itemCount = 1
+const itemCount = 0
 const Cart = () => {
   return <Sheet>
         <SheetTrigger className='group -m-2 flex items-center p-2'>

@@ -16,9 +16,9 @@ const ProductSchema = new Schema({
     imageURL: {type: String, required: true},
     price: {type: String, required: true},
     category: {type: Schema.Types.ObjectId, ref: 'Category'},
-    organizer: {type: Schema.Types.ObjectId, ref: 'User'}
+    seller: {type: Schema.Types.ObjectId, ref: 'User'}
 })
 
-const Event = models.Event || model('Product', ProductSchema)
+const Event = models.Event || model('Event', ProductSchema)
 
 export default Event;

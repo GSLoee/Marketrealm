@@ -23,7 +23,7 @@ const getCategoryByName = async (name: string) => {
 
 const populateProduct = (query: any) => {
   return query
-    .populate({ path: 'organizer', model: User, select: '_id firstName lastName' })
+    .populate({ path: 'seller', model: User, select: '_id firstName lastName' })
     .populate({ path: 'category', model: Category, select: '_id name' })
 }
 
@@ -32,15 +32,15 @@ export async function createProduct({ userId, product, path }: CreateProductPara
   try {
     await connectToDatabase()
 
-    const organizer = await User.findById(userId)
-    if (!organizer) throw new Error('Organizer not found')
+    const seller = await User.findById(userId)
+    if (!seller) throw new Error('Seller not found')
 
     console.log({
       categoryId: product.categoryId,
-      organizerId: userId,
+      sellerId: userId,
     })
     
-    const newProduct = await Product.create({ ...product, category: product.categoryId, organizer: userId })
+    const newProduct = await Product.create({ ...product, category: product.categoryId, seller: userId })
     revalidatePath(path)
 
     return JSON.parse(JSON.stringify(newProduct))
@@ -70,7 +70,7 @@ export async function updateProduct({ userId, product, path }: UpdateProductPara
     await connectToDatabase()
 
     const productToUpdate = await Product.findById(product._id)
-    if (!productToUpdate || productToUpdate.organizer.toHexString() !== userId) {
+    if (!productToUpdate || productToUpdate.seller.toHexString() !== userId) {
       throw new Error('Unauthorized or product not found')
     }
 
@@ -112,7 +112,6 @@ export async function getAllProducts({ query, limit = 6, page, category }: GetAl
 
     const skipAmount = (Number(page) - 1) * limit
     const productsQuery = Product.find(conditions)
-      .sort({ createdAt: 'desc' })
       .skip(skipAmount)
       .limit(limit)
 
@@ -128,12 +127,12 @@ export async function getAllProducts({ query, limit = 6, page, category }: GetAl
   }
 }
 
-// GET PRODUCTS BY ORGANIZER
+// GET PRODUCTS BY SELLER
 export async function getProductsByUser({ userId, limit = 6, page }: GetProductsByUserParams) {
   try {
     await connectToDatabase()
 
-    const conditions = { organizer: userId }
+    const conditions = { seller: userId }
     const skipAmount = (page - 1) * limit
 
     const productsQuery = Product.find(conditions)
