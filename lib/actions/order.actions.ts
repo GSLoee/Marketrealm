@@ -45,24 +45,30 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
     throw error;
   }
 }
-
 export const createOrder = async (order: CreateOrderParams) => {
-  try {
-    await connectToDatabase();
-    
-    const newOrder = await Order.create({
-      ...order,
-      product: order.productId,
-      buyer: order.buyerId,
-      address: order.address,
-    });
-    console.log("New Order created:", newOrder);
-
-    return JSON.parse(JSON.stringify(newOrder));
-  } catch (error) {
-    handleError(error);
-  }
-}
+    try {
+      await connectToDatabase();
+  
+      const newOrder = await Order.create({
+        stripeId: order.stripeId,
+        totalAmount: order.totalAmount,
+        product: order.productId,
+        buyer: order.buyerId,
+        address: {
+          city: order.address.city,
+          country: order.address.country,
+          line1: order.address.line1,
+          line2: order.address.line2 || '',
+          postal_code: order.address.postal_code,
+        },
+      });
+      console.log("New Order created:", newOrder);
+  
+      return JSON.parse(JSON.stringify(newOrder));
+    } catch (error) {
+      handleError(error);
+    }
+  };
 
 // GET ORDERS BY PRODUCT
 export async function getOrdersByProduct({ searchString, productId }: GetOrdersByProductParams) {
