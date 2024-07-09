@@ -29,7 +29,8 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
         },
       ],
       shipping_address_collection: {
-        allowed_countries: ['US', 'CA'] // Add the countries you want to allow
+        allowed_countries: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LI', 
+          'LT', 'LU', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'CH', 'GB', 'US', 'CA'] // Add the countries you want to allow
       },
       metadata: {
         productId: order.productId,
