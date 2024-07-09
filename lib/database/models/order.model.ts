@@ -3,7 +3,6 @@ import { Schema, model, models, Document } from 'mongoose'
 export interface IOrder extends Document {
   stripeId: string
   totalAmount: string
-  shippingAddress: string
   product: {
     _id: string
     title: string
@@ -11,6 +10,13 @@ export interface IOrder extends Document {
   buyer: {
     _id: string
     username: string
+  }
+  address: {
+    city: string
+    country: string 
+    line1: string
+    line2?: string
+    postal_code: string
   }
 }
 
@@ -39,6 +45,13 @@ const OrderSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  address: {
+    city: String,
+    country: String,
+    line1: String,
+    line2: String,
+    postal_code: String
+  }
 })
 
 const Order = models.Order || model('Order', OrderSchema)

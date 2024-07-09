@@ -11,7 +11,6 @@ import User from '../database/models/user.model';
 
 export const checkoutOrder = async (order: CheckoutOrderParams) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
   const price = Number(order.price) * 100;
 
   try {
@@ -55,7 +54,9 @@ export const createOrder = async (order: CreateOrderParams) => {
       ...order,
       product: order.productId,
       buyer: order.buyerId,
+      address: order.address,
     });
+    console.log("New Order created:", newOrder);
 
     return JSON.parse(JSON.stringify(newOrder));
   } catch (error) {

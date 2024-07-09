@@ -95,6 +95,13 @@ export type CreateUserParams = {
     productId: string
     buyerId: string
     totalAmount: string
+    address: {
+        city: string
+        country: string
+        line1: string
+        line2?: string
+        postal_code: string
+      }
   }
   
   export type GetOrdersByProductParams = {
