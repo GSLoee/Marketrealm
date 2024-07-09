@@ -6,7 +6,7 @@ import { SearchParamProps } from '@/types'
 import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'
 import React from 'react'
-import { IOrder } from '@/lib/database/models/order.mode'
+import { IOrder } from '@/lib/database/models/order.model'
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const { sessionClaims } = auth();
