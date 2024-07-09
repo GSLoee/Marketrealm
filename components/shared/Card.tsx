@@ -53,7 +53,8 @@ const Card = ({product, hasOrderLink, hidePrice}: CardProps) => {
                </Link>
                 <div className='flex-between w-full'>
                     <p className='p-medium-14 md:p-medium-16 text-grey-600'>
-                        Seller: {product.seller.firstName} {product.seller.lastName}
+                        {/* Seller: {product.seller.firstName} {product.seller.lastName} */}
+                        Seller: {product.seller.username}
                     </p>
                     {hasOrderLink && (
                         <Link href={`/orders?productId=${product._id}`} 
