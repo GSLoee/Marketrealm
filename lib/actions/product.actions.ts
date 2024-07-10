@@ -136,7 +136,6 @@ export async function getProductsByUser({ userId, limit = 6, page }: GetProducts
     const skipAmount = (page - 1) * limit
 
     const productsQuery = Product.find(conditions)
-      .sort({ createdAt: 'desc' })
       .skip(skipAmount)
       .limit(limit)
 

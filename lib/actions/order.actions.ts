@@ -125,7 +125,7 @@ export async function getOrdersByProduct({ searchString, productId }: GetOrdersB
   }
 }
 
-// GET ORDERS BY USER
+// GET ORDERS BY USER products bought by users
 export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUserParams) {
   try {
     await connectToDatabase()
@@ -141,7 +141,7 @@ export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUs
         path: 'product',
         model: Product,
         populate: {
-          path: 'organizer',
+          path: 'seller',
           model: User,
           select: '_id firstName lastName',
         },
@@ -154,3 +154,39 @@ export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUs
     handleError(error)
   }
 }
+
+export const getOrdersByUsersAndAddress = async ({ userId, limit = 3, page }: GetOrdersByUserParams) => {
+    try {
+      await connectToDatabase();
+  
+      const skipAmount = (Number(page) - 1) * limit;
+      const conditions = { buyer: userId };
+  
+      const orders = await Order.find(conditions)
+        .skip(skipAmount)
+        .limit(limit)
+        .populate({
+          path: 'product',
+          model: Product,
+          select: 'title',
+        })
+        .populate({
+          path: 'buyer',
+          model: User,
+          select: 'firstName lastName email username',
+        });
+  
+      const formattedOrders = orders.map(order => ({
+        orderId: order._id,
+        productTitle: order.product.title,
+        buyerName: `${order.buyer.firstName} ${order.buyer.lastName}`,
+        address: order.address,
+      }));
+  
+      const ordersCount = await Order.countDocuments(conditions);
+  
+      return { data: JSON.parse(JSON.stringify(formattedOrders)), totalPages: Math.ceil(ordersCount / limit) };
+    } catch (error) {
+      handleError(error);
+    }
+  };

@@ -36,7 +36,7 @@ const Collection = ({
               console.log('Product:', product); // Log each product to verify the structure
 
               return (
-                <li key={product._id} className='flex justify-center'>
+                <li className='flex justify-center'>
                   {/* Ensure we pass a single product object */}
                   <Card product={product} hasOrderLink={hasOrderLink} hidePrice={hidePrice} />
                 </li>

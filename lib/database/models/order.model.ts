@@ -26,6 +26,13 @@ export type IOrderItem = {
   productTitle: string
   productId: string
   buyer: string
+  address: {
+    city: string
+    country: string 
+    line1: string
+    line2?: string
+    postal_code: string
+  }
 }
 
 const OrderSchema = new Schema({

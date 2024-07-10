@@ -7,7 +7,7 @@ export interface IProduct extends Document {
     imageURL: string;
     price: string;
     category:{_id: string, name: string}
-    seller: {_id: string, username: string};
+    seller: {_id: string, username: string, firstName: string, lastName: string};
 }
 
 const ProductSchema = new Schema({
@@ -19,6 +19,6 @@ const ProductSchema = new Schema({
     seller: {type: Schema.Types.ObjectId, ref: 'User'}
 })
 
-const Event = models.Event || model('Event', ProductSchema)
+const Event = models.Event || model('Product', ProductSchema)
 
 export default Event;
