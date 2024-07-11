@@ -14,9 +14,13 @@ type CardProps = {
 const Card = ({ product, hasOrderLink, hidePrice }: CardProps) => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
-  const isProductCreator = userId === product.seller._id.toString();
+  const isProductCreator = product && product.seller && userId === product.seller._id.toString();
 
   console.log('Product in Card---:', isProductCreator);
+
+  if (!product) {
+    return <div className="text-center text-gray-500">Product not available</div>;
+  }
   
   return (
     <div className='group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]'>
@@ -49,7 +53,7 @@ const Card = ({ product, hasOrderLink, hidePrice }: CardProps) => {
           </p>
         </Link>
         <div className='flex-between w-full'>
-          <p className='p-medium-14 md:p-medium-16 text-grey-600'>
+        <p className='p-medium-14 md:p-medium-16 text-grey-600'>
             Seller: {product.seller ? `${product.seller?.firstName} ${product.seller?.lastName}` : 'Unknown Seller'}
           </p>
           {hasOrderLink && (

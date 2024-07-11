@@ -6,24 +6,26 @@ import { SearchParamProps } from '@/types'
 import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'
 import React from 'react'
-import { IOrder } from '@/lib/database/models/order.model'
-import { getOrdersByUser } from '@/lib/actions/order.actions'
+import { IOrder, IOrderItem } from '@/lib/database/models/order.model'
+import { getOrdersByUserA, getOrdersByUser, getOrdersByProduct } from '@/lib/actions/order.actions'
+import { IProduct } from '@/lib/database/models/product.model'
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
-  const orders = await getOrdersByUser({ userId, page: 1})
+  const orderss = await getOrdersByUser({ userId, page: 1})
+  // const orders = await getOrdersByUserA(userId)
   const ordersPage = Number(searchParams?.ordersPage) || 1;
   const productsPage = Number(searchParams?.productsPage) || 1;
 
   // const orders = await getOrdersByUser({ userId, page: ordersPage })
 
-  const orderedProducts = orders?.data.map((order: IOrder) => order.product) || [];
+  const orderedProducts = orderss?.data.map((order: IOrder) => order.product) || [];
   const myProducts = await getProductsByUser({ userId, page: productsPage })
-  console.log("------------", myProducts)
+  // console.log("==logeds==", orders)
+  console.log("---g-g-g-g-", myProducts)
   return (
     <>
-      {/* My Tickets */}
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className='h3-bold text-center sm:text-left'>Your Purchased Products</h3>
@@ -44,7 +46,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           limit={3}
           page={ordersPage}
           urlParamName="ordersPage"
-          totalPages={orders?.totalPages}
+          totalPages={orderss?.totalPages}
         />
       </section>
 
@@ -72,13 +74,15 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           totalPages={myProducts?.totalPages}
         />
       </section>
+      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+        <div className="wrapper flex items-center justify-center sm:justify-between">
+          <Link href={`/orders/user?userId=${userId}`}><h3 className='h3-bold text-center sm:text-left'>Your Orders</h3></Link>
+          </div>
+          </section>
       {/* ORDERSSSSS */}
-
-
-
       {/* <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
-          <h3 className='h3-bold text-center sm:text-left'>Your Orders</h3>
+          <Link href={`/orders/user?userId=${userId}`}><h3 className='h3-bold text-center sm:text-left'>Your Orders</h3></Link>
         </div>   
       </section>
       <section className="wrapper overflow-x-auto">
@@ -88,11 +92,11 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
               <th className="min-w-[250px] py-3 text-left">Order ID</th>
               <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">Product Title</th>
               <th className="min-w-[150px] py-3 text-left">Buyer</th>
-              <th className="min-w-[100px] py-3 text-left">Shipping Address</th>
-              <th className="min-w-[100px] py-3 text-right">Amount</th>
+              <th className="min-w-[100px] py-3 text-right">Total Amount</th>
+              <th className="min-w-[50px] py-3 text-right">Shipping Address</th>
             </tr>
-          </thead>
-          <tbody>
+          </thead> */}
+          {/* <tbody>
             {orders && orders.length === 0 ? (
               <tr className="border-b">
                 <td colSpan={5} className="py-4 text-center text-gray-500">
@@ -100,22 +104,21 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                 </td>
               </tr>
             ) : (
-              <>
-                {orders &&
-                  orders.map((row: IOrderItem) => (
-                    <tr
-                      key={row._id}
-                      className="p-regular-14 lg:p-regular-16 border-b"
-                      style={{ boxSizing: 'border-box' }}>
-                      <td className="min-w-[250px] py-4 text-primary-500">{row._id}</td>
-                      <td className="min-w-[200px] flex-1 py-4 pr-4">{row.productTitle}</td>
-                      <td className="min-w-[150px] py-4">{row.buyer}</td>
-                    </tr>
-                  ))}
-              </>
+              orders.map((o: any) => (
+                <tr
+                  key={o.orderId}
+                  className="p-regular-14 lg:p-regular-16 border-b"
+                  style={{ boxSizing: 'border-box' }}>
+                  <td className="min-w-[250px] py-4 text-primary-500">{o._id}</td>
+                  <td className="min-w-[200px] flex-1 py-4 pr-4">{o.productTitle}</td>
+                  <td className="min-w-[150px] py-4">{o.buyerName}</td>
+                  <td className="min-w-[100px] py-4 text-right">{o.productPrice}</td>
+                  <th className="min-w-[50px] py-3 text-right">{o.buyerAddress.line1}</th>
+                </tr>
+              ))
             )}
-          </tbody>
-        </table>
+          </tbody> */}
+        {/* </table>
       </section> */}
     </>
   )

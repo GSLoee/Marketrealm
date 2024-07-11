@@ -1,6 +1,6 @@
 "use server"
 import Stripe from 'stripe'
-import { CheckoutOrderParams, CreateOrderParams, GetOrdersByProductParams, GetOrdersByUserParams } from "@/types"
+import { CheckoutOrderParams, CreateOrderParams, GetOrdersByProductParams, GetOrdersByUserAParams, GetOrdersByUserParams } from "@/types"
 import { redirect } from 'next/navigation';
 import { handleError } from '../utils';
 import { connectToDatabase } from '../database';
@@ -8,6 +8,8 @@ import Order from '../database/models/order.model';
 import Product from '../database/models/product.model';
 import { ObjectId } from 'mongodb';
 import User from '../database/models/user.model';
+import { Types } from 'mongoose';
+
 
 export const checkoutOrder = async (order: CheckoutOrderParams) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -72,61 +74,108 @@ export const createOrder = async (order: CreateOrderParams) => {
 
 // GET ORDERS BY PRODUCT
 export async function getOrdersByProduct({ searchString, productId }: GetOrdersByProductParams) {
-  try {
-    await connectToDatabase()
-
-    if (!productId) throw new Error('Product ID is required')
-    const productObjectId = new ObjectId(productId)
-
-    const orders = await Order.aggregate([
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'buyer',
-          foreignField: '_id',
-          as: 'buyer',
-        },
-      },
-      {
-        $unwind: '$buyer',
-      },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'product',
-          foreignField: '_id',
-          as: 'product',
-        },
-      },
-      {
-        $unwind: '$product',
-      },
-      {
-        $project: {
-          _id: 1,
-          totalAmount: 1,
-          productTitle: '$product.title',
-          productId: '$product._id',
-          buyer: {
-            $concat: ['$buyer.firstName', ' ', '$buyer.lastName'],
+    try {
+      await connectToDatabase()
+  
+      if (!productId) throw new Error('Product ID is required')
+      const productObjectId = new ObjectId(productId)
+  
+      const orders = await Order.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'buyer',
+            foreignField: '_id',
+            as: 'buyer',
           },
         },
-      },
-      {
-        $match: {
-          $and: [{ productId: productObjectId }, { buyer: { $regex: RegExp(searchString, 'i') } }],
+        {
+          $unwind: '$buyer',
         },
-      },
-    ])
-
-    return JSON.parse(JSON.stringify(orders))
-  } catch (error) {
-    handleError(error)
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'product',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        {
+          $unwind: '$product',
+        },
+        {
+          $project: {
+            _id: 1,
+            totalAmount: 1,
+            productTitle: '$product.title',
+            productId: '$product._id',
+            buyer: {
+              $concat: ['$buyer.firstName', ' ', '$buyer.lastName'],
+            },
+            address: '$address', // Include address field from orders collection
+          },
+        },
+        {
+          $match: {
+            $and: [{ productId: productObjectId }, { buyer: { $regex: RegExp(searchString, 'i') } }],
+          },
+        },
+      ])
+  
+      console.log('Fetched Orders', orders);
+      return JSON.parse(JSON.stringify(orders))
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      handleError(error)
+    }
   }
-}
 
 // GET ORDERS BY USER products bought by users
-export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUserParams) {
+// export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUserParams) {
+//     try {
+//       await connectToDatabase();
+  
+//       const skipAmount = (Number(page) - 1) * limit;
+//       const conditions = { buyer: userId };
+  
+//       const orders = await Order.find(conditions)
+//         .skip(skipAmount)
+//         .limit(limit)
+//         .populate({
+//           path: 'product',
+//           model: Product,
+//           select: '_id title',
+//           populate: {
+//             path: 'seller',
+//             model: User,
+//             select: '_id firstName lastName',
+//           },
+//         })
+//         .populate({
+//           path: 'buyer',
+//           model: User,
+//           select: '_id username',
+//         });
+  
+//       const ordersCount = await Order.countDocuments(conditions);
+  
+//       return {
+//         data: orders.map(order => ({
+//           _id: order._id,
+//           totalAmount: order.totalAmount,
+//           productTitle: order.product.title,
+//           productId: order.product._id,
+//           buyer: `${order.buyer.firstName} ${order.buyer.lastName}`,
+//           address: order.address,
+//         })),
+//         totalPages: Math.ceil(ordersCount / limit),
+//       };
+//     } catch (error) {
+//       handleError(error)
+//     }
+//   }
+
+  export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUserParams) {
   try {
     await connectToDatabase()
 
@@ -155,38 +204,131 @@ export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUs
   }
 }
 
-export const getOrdersByUsersAndAddress = async ({ userId, limit = 3, page }: GetOrdersByUserParams) => {
+export async function getOrdersByUserA({ searchString, userId }: GetOrdersByUserAParams) {
     try {
       await connectToDatabase();
+      const userObjectId = new ObjectId(userId);
   
-      const skipAmount = (Number(page) - 1) * limit;
-      const conditions = { buyer: userId };
+      const orders = await Order.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'buyer',
+            foreignField: '_id',
+            as: 'buyer',
+          },
+        },
+        {
+          $unwind: '$buyer',
+        },
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'product',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        {
+          $unwind: '$product',
+        },
+        {
+          $match: {
+            'product.seller': userObjectId,
+            'buyer.firstName': { $regex: RegExp(searchString, 'i') },
+          },
+        },
+        {
+          $project: {
+            orderId: '$_id',
+            totalAmount: 1,
+            productTitle: '$product.title',
+            productId: '$product._id',
+            buyerName: { $concat: ['$buyer.firstName', ' ', '$buyer.lastName'] },
+            buyerEmail: '$buyer.email',
+            buyerAddress: '$address',
+          },
+        },
+      ]);
   
-      const orders = await Order.find(conditions)
-        .skip(skipAmount)
-        .limit(limit)
-        .populate({
-          path: 'product',
-          model: Product,
-          select: 'title',
-        })
-        .populate({
-          path: 'buyer',
-          model: User,
-          select: 'firstName lastName email username',
-        });
-  
-      const formattedOrders = orders.map(order => ({
-        orderId: order._id,
-        productTitle: order.product.title,
-        buyerName: `${order.buyer.firstName} ${order.buyer.lastName}`,
-        address: order.address,
-      }));
-  
-      const ordersCount = await Order.countDocuments(conditions);
-  
-      return { data: JSON.parse(JSON.stringify(formattedOrders)), totalPages: Math.ceil(ordersCount / limit) };
+      console.log('Fetched Orders', orders);
+      return JSON.parse(JSON.stringify(orders));
     } catch (error) {
-      handleError(error);
+      console.error('Error fetching orders:', error);
+      throw new Error('Failed to fetch orders');
     }
-  };
+  }
+
+// Get orders by user with detailed buyer and product information
+  
+
+
+export async function getOrderAddressesByUser({ userId }: GetOrdersByUserParams) {
+    try {
+      await connectToDatabase()
+  
+      const orders = await Order.find({ buyer: userId }).select('address').lean()
+  
+      const addresses = orders.map(order => order.address)
+  
+      return addresses
+    } catch (error) {
+      console.error('Error fetching order addresses:', error)
+      throw new Error('Failed to fetch order addresses')
+    }
+  }
+
+  export async function getOrdersByUserB({ searchString, userId }: GetOrdersByUserAParams) {
+    try {
+      await connectToDatabase();
+      const userObjectId = new ObjectId(userId);
+  
+      const orders = await Order.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'buyer',
+            foreignField: '_id',
+            as: 'buyer',
+          },
+        },
+        {
+          $unwind: '$buyer',
+        },
+        {
+          $lookup: {
+            from: 'events',
+            localField: 'product',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        {
+          $unwind: '$product',
+        },
+        {
+          $match: {
+            'product.seller': userObjectId,
+            'buyer.firstName': { $regex: RegExp(searchString, 'i') },
+          },
+        },
+        {
+          $project: {
+            orderId: '$_id',
+            totalAmount: 1,
+            productTitle: '$product.title',
+            productId: '$product._id',
+            buyerName: { $concat: ['$buyer.firstName', ' ', '$buyer.lastName'] },
+            buyerEmail: '$buyer.email',
+            buyerAddress: '$address',
+          },
+        },
+      ]);
+  
+      console.log('Fetched Orders---', orders);
+      return { orders: JSON.parse(JSON.stringify(orders))};
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      throw new Error('Failed to fetch orders');
+    }
+  }

@@ -112,7 +112,12 @@ export type CreateUserParams = {
   export type GetOrdersByUserParams = {
     userId: string | null
     limit?: number
-    page: string | number | null
+    page?: string | number | null
+  }
+
+  export type GetOrdersByUserAParams = {
+    userId: string
+    searchString: string
   }
   
   export type GetOrdersWithAddressParams = {
