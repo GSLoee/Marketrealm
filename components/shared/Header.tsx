@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "../ui/button"
@@ -29,9 +29,10 @@ const Header = () => {
           </SignedIn>
           <SignedOut>
             <Button asChild className="rounded-full" size="lg">
-              <Link href="/sign-in">
-                Login
-              </Link>
+              <SignInButton />
+            </Button>
+            <Button asChild className="rounded-full" size="lg">
+              <SignUpButton />
             </Button>
           </SignedOut>
         </div>
