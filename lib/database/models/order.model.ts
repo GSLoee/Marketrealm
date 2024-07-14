@@ -26,6 +26,7 @@ export type IOrderItem = {
   productTitle: string
   productId: string
   buyer: string
+  buyerEmail: string
   address: {
     city: string
     country: string 

@@ -112,6 +112,7 @@ export async function getOrdersByProduct({ searchString, productId }: GetOrdersB
             buyer: {
               $concat: ['$buyer.firstName', ' ', '$buyer.lastName'],
             },
+            buyerEmail: '$buyer.email',
             address: '$address', // Include address field from orders collection
           },
         },

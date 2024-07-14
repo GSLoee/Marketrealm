@@ -19,6 +19,6 @@ const ProductSchema = new Schema({
     seller: {type: Schema.Types.ObjectId, ref: 'User'}
 })
 
-const Event = models.Event || model('Product', ProductSchema)
+const Event = models.Event || model('Event', ProductSchema)
 
 export default Event;

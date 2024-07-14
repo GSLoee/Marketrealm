@@ -2,20 +2,41 @@ import Search from '@/components/shared/Search'
 import { getOrdersByProduct } from '@/lib/actions/order.actions'
 import { SearchParamProps } from '@/types'
 import { IOrderItem } from '@/lib/database/models/order.model'
-
+type Order = {
+  _id: string;
+  orderId: string;
+  totalAmount: string;
+  productTitle: string;
+  productId: string;
+  buyerName: string;
+  buyerEmail: string;
+  buyerAddress: {
+    line1: string;
+    city: string;
+    postal_code: string;
+    country: string;
+  };
+};
 const Orders = async ({ searchParams }: SearchParamProps) => {
   const productId = (searchParams?.productId as string) || ''
   const searchText = (searchParams?.query as string) || ''
 
   const orders = await getOrdersByProduct({ productId, searchString: searchText })
   console.log('orders---->', orders)
-
+  function addComma(number: number): string {
+    return number.toLocaleString('en-US');
+  }
+  const totalRevenue = orders.reduce((sum: number, order: Order) => sum + parseFloat(order.totalAmount), 0);
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <h3 className="wrapper h3-bold text-center sm:text-left">Orders</h3>
       </section>
-
+      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+        <div className="wrapper flex items-center justify-center sm:justify-between">
+          <h3 className='h3-bold text-center sm:text-left'>Total Revenue: ${addComma(totalRevenue)}</h3>
+        </div>
+      </section>
       <section className="wrapper mt-8">
         {/* <Search placeholder="Search buyer name..." /> */}
       </section>
@@ -48,8 +69,8 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
                       style={{ boxSizing: 'border-box' }}>
                       <td className="min-w-[250px] py-4 text-primary-500">{row._id}</td>
                       <td className="min-w-[200px] flex-1 py-4 pr-4">{row.productTitle}</td>
-                      <td className="min-w-[150px] py-4">{row.buyer}</td>
-                      <td className='min-w-[100px] py-4'>{row.totalAmount}</td>
+                      <td className="min-w-[150px] py-4">{row.buyer} ({row.buyerEmail})</td>
+                      <td className='min-w-[100px] py-4'>${addComma(parseFloat(row.totalAmount))}</td>
                       <td className='min-w-[100px] py-3 text-right'>{row.address.line1} {row.address.city} {row.address.country} {row.address.postal_code}</td>
                     </tr>
                   ))}

@@ -9,6 +9,8 @@ import React from 'react'
 import { IOrder, IOrderItem } from '@/lib/database/models/order.model'
 import { getOrdersByUserA, getOrdersByUser, getOrdersByProduct } from '@/lib/actions/order.actions'
 import { IProduct } from '@/lib/database/models/product.model'
+import Image from 'next/image'
+import UserOrders from '../orders/user/page'
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const { sessionClaims } = auth();
@@ -26,6 +28,15 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   console.log("---g-g-g-g-", myProducts)
   return (
     <>
+    <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+        <div className="flex wrapper sm:justify-between">
+          <Link href={`/orders/user?userId=${userId}`}>
+          <h3 className='h3-bold text-center sm:text-left hover:underline hover:text-sky-500'>Click to view your orders
+          </h3>
+          </Link>
+          {/* <Image src="/assets/icons/arrow.svg" alt="search" width={10} height={10} /> */}
+        </div>
+    </section>
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className='h3-bold text-center sm:text-left'>Your Purchased Products</h3>
@@ -74,11 +85,11 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           totalPages={myProducts?.totalPages}
         />
       </section>
-      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+      {/* <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <Link href={`/orders/user?userId=${userId}`}><h3 className='h3-bold text-center sm:text-left'>Your Orders</h3></Link>
           </div>
-          </section>
+          </section> */}
       {/* ORDERSSSSS */}
       {/* <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
