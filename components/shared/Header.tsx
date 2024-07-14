@@ -28,10 +28,10 @@ const Header = () => {
             <MobileNav />
           </SignedIn>
           <SignedOut>
-            <Button asChild className="rounded-full" size="lg">
+            <Button asChild className="rounded-full">
               <SignInButton />
             </Button>
-            <Button asChild className="rounded-full" size="lg">
+            <Button asChild className="rounded-full">
               <SignUpButton />
             </Button>
           </SignedOut>
