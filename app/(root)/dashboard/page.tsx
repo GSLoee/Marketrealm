@@ -51,7 +51,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
       <section className="wrapper my-8">
         <Collection 
           data={orderedProducts}
-          emptyTitle="No product tickets purchased yet"
+          emptyTitle="No product purchased yet"
           emptyStateSubtext="No worries - plenty of exciting products to explore!"
           collectionType="My_Products"
           limit={3}
